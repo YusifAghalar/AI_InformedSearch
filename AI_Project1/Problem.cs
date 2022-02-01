@@ -71,15 +71,15 @@ namespace AI_Project1
 
             return true;
         }
-
+        //Needs rework
         private List<State> GetPossible(State state)
         {
 
             var possible = new List<State>();
             for (int i = 0; i < state.Pitches.Count; i++)
             {
-                AddEmptiedPitch(i,possible);
-                AddFilled(i,possible);
+                AddEmptiedPitch(i,possible,state);
+                AddFilled(i,possible,state);
                 for (int j = i; j< state.Pitches.Count; j++)
                 {
                     var temp  = new List<WaterPitch>(state.Pitches);
@@ -93,17 +93,17 @@ namespace AI_Project1
             return possible.Where(x => !x.Pitches.Any(p => !p.IsValid())).ToList();
 
         }
-        private void AddEmptiedPitch(int i, List<State> possible)
+        private void AddEmptiedPitch(int i, List<State> possible,State currentState)
         {
-            var emptied = new List<WaterPitch>(WaterPitches);
+            var emptied = new List<WaterPitch>(currentState.Pitches);
             emptied[i].Empty();
             var emptiedstate = new State() { Pitches = emptied };
             possible.Add(emptiedstate);
             
         }
-        private void AddFilled(int i, List<State> possible)
+        private void AddFilled(int i, List<State> possible, State currentState)
         {
-            var filled = new List<WaterPitch>(WaterPitches);
+            var filled = new List<WaterPitch>(currentState.Pitches);
             filled[i].Fill();
             var filledState = new State() { Pitches = filled };
             possible.Add(filledState);
