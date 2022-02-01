@@ -14,7 +14,6 @@ namespace AI_Project1
         }
         public int Capacity { get; set; }
         public int Current { get; set; }
-        public int Cost { get; set; }
         public bool IsInfinite { get; set; }
         public WaterPitch (WaterPitch waterPitch)
         {
