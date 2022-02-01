@@ -21,6 +21,7 @@ namespace AI_Project1
         {
 
             var pithces = lines[0].Split(",", StringSplitOptions.RemoveEmptyEntries).Select(x => new WaterPitch(int.Parse(x))).ToList();
+            pithces.Add(WaterPitch.InfiniteWaterPitch());
             var goal = int.Parse(lines[1]);
             return new Problem() {  Goal = goal, ActiveStates = new List<State> { new State(pithces,null) { } } };
 

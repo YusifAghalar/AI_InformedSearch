@@ -50,8 +50,8 @@ namespace AI_Project1
 
         }
 
-     
 
+        public static WaterPitch InfiniteWaterPitch() => new WaterPitch(int.MaxValue);
     }
 
    
