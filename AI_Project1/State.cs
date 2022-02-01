@@ -11,6 +11,10 @@ namespace AI_Project1
         {
             Pitches = pitches;
             Parent = parent;
+
+            if (Parent == null)  Cost = 1;   
+            else Cost = parent.Cost + 1;
+            
         }
         public List<WaterPitch> Pitches { get; set; }
         public int Cost { get; set; }

@@ -15,9 +15,7 @@ namespace AI_Project1
 
 
         public int Goal { get; set; }
-
         public List<State> ActiveStates { get; set; }
-
         public List<State> VisitedStates { get; set; }
         public static Problem Init(string[] lines)
         {
@@ -28,17 +26,18 @@ namespace AI_Project1
 
         }
 
-        internal bool Search()
+        internal int Search()
         {
           
 
             while (ActiveStates.Any())
             {
+                //Change with Pirioriry queue
                 var searchedStated = ActiveStates.OrderBy(x => x.Cost).First();
 
                 if (searchedStated.HasReachedGoal(Goal))
                 {
-                    Console.WriteLine("Ok");
+                    return searchedStated.Cost;
                 }
                 VisitedStates.Add(searchedStated);
                 ActiveStates.Remove(searchedStated);
@@ -69,7 +68,7 @@ namespace AI_Project1
             }
            
 
-            return true;
+            return -1;
         }
         //Needs rework
         private List<State> GetPossible(State state)

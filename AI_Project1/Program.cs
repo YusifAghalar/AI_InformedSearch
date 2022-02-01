@@ -9,7 +9,9 @@ namespace AI_Project1
         {
             string[] input = System.IO.File.ReadAllLines(Directory.GetCurrentDirectory()+"/input.txt");
             var problem  = Problem.Init(input);
-            problem.Search();
+            var steps= problem.Search();
+            if (steps > 0) Console.WriteLine(steps);
+            else Console.WriteLine("Path not found");
         }
     }
 }
