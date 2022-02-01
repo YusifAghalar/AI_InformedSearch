@@ -6,11 +6,12 @@ using System.Linq;
 
 namespace AI_Project1
 {
-    public class Problem
+    public partial class Problem
     {
         private Problem()
         {
-
+            ActiveStates = new List<State>();
+            VisitedStates = new List<State>();
         }
 
 
@@ -21,9 +22,10 @@ namespace AI_Project1
         {
 
             var pithces = lines[0].Split(",", StringSplitOptions.RemoveEmptyEntries).Select(x => new WaterPitch(int.Parse(x))).ToList();
+            pithces.ForEach(x => x.Current = x.Capacity);
             pithces.Add(WaterPitch.InfiniteWaterPitch());
             var goal = int.Parse(lines[1]);
-            return new Problem() {  Goal = goal, ActiveStates = new List<State> { new State(pithces,null) { } } };
+            return new Problem() {  Goal = goal, ActiveStates = new List<State> { new State(pithces,null,goal) { } } };
 
         }
 
@@ -34,7 +36,8 @@ namespace AI_Project1
             while (ActiveStates.Any())
             {
                 //Change with Pirioriry queue
-                var searchedStated = ActiveStates.OrderBy(x => x.Cost).First();
+                var searchedStated = ActiveStates.OrderBy(x => x.Distance).First();
+             
 
                 if (searchedStated.HasReachedGoal(Goal))
                 {
@@ -53,7 +56,7 @@ namespace AI_Project1
                     if (ActiveStates.Any(x => x.Key==state.Key))
                     {
                         var existingState = ActiveStates.First(x => x.Key==state.Key);
-                        if (existingState.CostDistance > searchedStated.CostDistance)
+                        if (existingState.Distance > searchedStated.Distance)
                         {
                             ActiveStates.Remove(existingState);
                             ActiveStates.Add(searchedStated);
@@ -66,6 +69,7 @@ namespace AI_Project1
                     }
 
                 }
+                ActiveStates = ActiveStates.Distinct(new StateEqualityComparer()).ToList();
             }
            
 
@@ -78,36 +82,46 @@ namespace AI_Project1
             var possible = new List<State>();
             for (int i = 0; i < state.Pitches.Count; i++)
             {
+                
                 AddEmptiedPitch(i,possible,state);
-                AddFilled(i,possible,state);
-                for (int j = i; j< state.Pitches.Count; j++)
+                AddFilledPitch(i, possible, state);
+                for (int j = 0; j< state.Pitches.Count; j++)
                 {
-                    var temp  = new List<WaterPitch>(state.Pitches);
-                    (temp[i], temp[j]) = state.Pitches[i].FillFrom(state.Pitches[j]);
-                    var newState = new State(temp,state);
-                    possible.Add(newState);
+                  
+                    var temp  = new List<WaterPitch>(state.Pitches.Select(x => new WaterPitch(x)));
+                    temp[i].FillFrom(temp[j]);
+                   
+                    var newState = new State(temp,state,Goal);
+                    if(!possible.Any(x=>x.Key==newState.Key))
+                        possible.Add(newState);
                     
                 }
             }
-
-            return possible.Where(x => !x.Pitches.Any(p => !p.IsValid())).ToList();
+            
+            return possible.ToList();
 
         }
         private void AddEmptiedPitch(int i, List<State> possible,State currentState)
         {
-            var emptied = new List<WaterPitch>(currentState.Pitches);
+
+          
+            var emptied = new List<WaterPitch>(currentState.Pitches.Select(x => new WaterPitch(x)));
+            if (emptied[i].IsInfinite) return;
             emptied[i].Empty();
-            var emptiedstate = new State(emptied,currentState);
+            var emptiedstate = new State(emptied,currentState,Goal);
+            
             possible.Add(emptiedstate);
             
         }
-        private void AddFilled(int i, List<State> possible, State currentState)
+        private void AddFilledPitch(int i, List<State> possible, State currentState)
         {
-            var filled = new List<WaterPitch>(currentState.Pitches);
+           
+            var filled = new List<WaterPitch>(currentState.Pitches.Select(x => new WaterPitch(x)));
+            if (filled[i].IsInfinite) return;
             filled[i].Fill();
-            var filledState = new State(filled, currentState);
+            var filledState = new State(filled, currentState,Goal);
             possible.Add(filledState);
-            
+           
         }
     }
 }
