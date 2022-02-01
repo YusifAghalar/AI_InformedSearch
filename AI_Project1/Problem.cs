@@ -24,7 +24,7 @@ namespace AI_Project1
 
             var pithces = lines[0].Split(",", StringSplitOptions.RemoveEmptyEntries).Select(x => new WaterPitch(int.Parse(x))).ToList();
             var goal = int.Parse(lines[1]);
-            return new Problem() {  Goal = goal, ActiveStates = new List<State> { new State() { Pitches = new List<WaterPitch>(pithces) } } };
+            return new Problem() {  Goal = goal, ActiveStates = new List<State> { new State(pithces,null) { } } };
 
         }
 
@@ -84,7 +84,7 @@ namespace AI_Project1
                 {
                     var temp  = new List<WaterPitch>(state.Pitches);
                     (temp[i], temp[j]) = state.Pitches[i].FillFrom(state.Pitches[j]);
-                    var newState = new State() { Pitches = temp };
+                    var newState = new State(temp,state);
                     possible.Add(newState);
                     
                 }
@@ -97,7 +97,7 @@ namespace AI_Project1
         {
             var emptied = new List<WaterPitch>(currentState.Pitches);
             emptied[i].Empty();
-            var emptiedstate = new State() { Pitches = emptied };
+            var emptiedstate = new State(emptied,currentState);
             possible.Add(emptiedstate);
             
         }
@@ -105,7 +105,7 @@ namespace AI_Project1
         {
             var filled = new List<WaterPitch>(currentState.Pitches);
             filled[i].Fill();
-            var filledState = new State() { Pitches = filled };
+            var filledState = new State(filled, currentState);
             possible.Add(filledState);
             
         }
