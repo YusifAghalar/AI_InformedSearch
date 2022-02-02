@@ -22,31 +22,26 @@ namespace AI_Project1
         {
 
             var pithces = lines[0].Split(",", StringSplitOptions.RemoveEmptyEntries).Select(x => new WaterPitch(int.Parse(x))).ToList();
-            pithces.ForEach(x => x.Current = x.Capacity);
+          
             pithces.Add(WaterPitch.InfiniteWaterPitch());
             var goal = int.Parse(lines[1]);
             return new Problem() {  Goal = goal, ActiveStates = new List<State> { new State(pithces,null,goal) { } } };
 
         }
 
-        internal int Search()
+        internal State Search()
         {
           
 
             while (ActiveStates.Any())
             {
                 //Change with Pirioriry queue
-                var searchedStated = ActiveStates.OrderBy(x => x.Distance).First();
+                var searchedStated = ActiveStates.OrderBy(x => x.CostDistance).First();
+                if (searchedStated.HasReachedGoal(Goal)) return searchedStated;
                 
-              
 
-                if (searchedStated.HasReachedGoal(Goal))
-                {
-                    return searchedStated.Cost;
-                }
                 VisitedStates.Add(searchedStated);
                 ActiveStates.Remove(searchedStated);
-
                 var possibleStates = GetPossible(searchedStated);
 
                 foreach (var state in possibleStates)
@@ -65,7 +60,6 @@ namespace AI_Project1
                     }
                     else
                     {
-                       
                         ActiveStates.Add(state);
                     }
 
@@ -74,9 +68,11 @@ namespace AI_Project1
             }
            
 
-            return -1;
+            return null;
         }
-        //Needs rework
+        
+
+        
         private List<State> GetPossible(State state)
         {
 

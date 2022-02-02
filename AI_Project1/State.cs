@@ -11,12 +11,12 @@ namespace AI_Project1
         {
             Pitches = pitches;
             Parent = parent;
-
             Infinite = Pitches.FirstOrDefault(x => x.IsInfinite);
+
             if (Parent == null)  Cost = 0;
             else Cost = parent.Cost + 1;
 
-            Distance = Cost + (goal - Infinite.Current) ;
+            SetDistance(goal);
             
         }
         public WaterPitch Infinite { get; set; }
@@ -24,11 +24,17 @@ namespace AI_Project1
         public State Parent { get; set; }
 
         public int Cost { get; set; }
-        public int Distance { get; set; }
-   
+        public float Distance { get; set; }
+        public float CostDistance => Cost + Distance;
+
         public bool HasReachedGoal(int goal)
         {
             return Pitches.FirstOrDefault(x => x.IsInfinite).Current == goal;
+        }
+        public void SetDistance(int goal)
+        {
+            var maxJag = Pitches.OrderBy(x => x.Capacity).ThenByDescending(x=>x.Current).FirstOrDefault();
+            Distance = Math.Abs(goal - Infinite.Current)/maxJag.Capacity;
         }
 
         public string Key  => string.Join(" ", Pitches.Select(x => x.Current.ToString()));

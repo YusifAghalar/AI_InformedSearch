@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
+﻿
 namespace AI_Project1
 {
     public class WaterPitch
     {
        
       
-        public WaterPitch(int capacity)
+        public WaterPitch(float capacity)
         {
             Capacity = capacity;
           
         }
-        public int Capacity { get; set; }
-        public int Current { get; set; }
+        public float Capacity { get; set; }
+        public float Current { get; set; }
         public bool IsInfinite { get; set; }
         public WaterPitch (WaterPitch waterPitch)
         {
@@ -28,7 +26,7 @@ namespace AI_Project1
 
         public bool IsValid() => Current <= Capacity;
 
-        public int AvailableSpace => Capacity - Current;
+        public float AvailableSpace => Capacity - Current;
 
         public void FillFrom(WaterPitch second)
         {
@@ -44,9 +42,7 @@ namespace AI_Project1
                 Current = Current + AvailableSpace;
 
             }
-           
 
-           
 
         }
 
