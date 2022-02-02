@@ -49,7 +49,7 @@ namespace AI_Project1
 
         public static WaterPitch InfiniteWaterPitch()
         {
-            var wp = new WaterPitch(int.MaxValue);
+            var wp = new WaterPitch(float.MaxValue);
             wp.IsInfinite = true;
             return wp;
         }

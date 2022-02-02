@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AI_Project1
@@ -23,21 +24,30 @@ namespace AI_Project1
         public List<WaterPitch> Pitches { get; set; }
         public State Parent { get; set; }
 
-        public int Cost { get; set; }
+        public float Cost { get; set; }
         public float Distance { get; set; }
-        public float CostDistance => Cost + Distance;
+        public float CostDistance { get; set; }
 
         public bool HasReachedGoal(int goal)
         {
             return Pitches.FirstOrDefault(x => x.IsInfinite).Current == goal;
         }
-        public void SetDistance(int goal)
+        public void SetDistance(float goal)
         {
-            var maxJag = Pitches.OrderBy(x => x.Capacity).ThenByDescending(x=>x.Current).FirstOrDefault();
-            Distance = Math.Abs(goal - Infinite.Current)/maxJag.Capacity;
+          
+
+            var maxCapacity =Pitches.Where(x=>!x.IsInfinite).OrderByDescending(x => x.Capacity).ThenByDescending(x=>x.Current).FirstOrDefault().Capacity;
+            var currentMax = Pitches.Where(x =>!x.IsInfinite).OrderByDescending(x => x.Current).FirstOrDefault().Current;
+            Distance = (Math.Abs(goal - currentMax -  Infinite.Current)/maxCapacity)*2;
+            CostDistance = Distance + Cost;
         }
 
         public string Key  => string.Join(" ", Pitches.Select(x => x.Current.ToString()));
+
+        public override int GetHashCode()
+        {
+            return Key.GetHashCode();
+        }
 
     }
 

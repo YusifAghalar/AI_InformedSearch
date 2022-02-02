@@ -10,22 +10,24 @@ namespace AI_Project1
     {
         private Problem()
         {
-            ActiveStates = new List<State>();
-            VisitedStates = new List<State>();
+            ActiveStates = new SimplePriorityQueue<State>();
+            VisitedStates = new Dictionary<string, float>();
         }
 
 
         public int Goal { get; set; }
-        public List<State> ActiveStates { get; set; }
-        public List<State> VisitedStates { get; set; }
+        public SimplePriorityQueue<State> ActiveStates { get; set; }
+        public Dictionary<string,float> VisitedStates { get; set; }
         public static Problem Init(string[] lines)
         {
 
-            var pithces = lines[0].Split(",", StringSplitOptions.RemoveEmptyEntries).Select(x => new WaterPitch(int.Parse(x))).ToList();
+            var pithces = lines[0].Split(",", StringSplitOptions.RemoveEmptyEntries).Select(x => new WaterPitch(float.Parse(x))).ToList();
           
             pithces.Add(WaterPitch.InfiniteWaterPitch());
             var goal = int.Parse(lines[1]);
-            return new Problem() {  Goal = goal, ActiveStates = new List<State> { new State(pithces,null,goal) { } } };
+            var pq = new SimplePriorityQueue<State>();
+            pq.Enqueue(new State(pithces, null, goal) { }, 0);
+            return new Problem() {  Goal = goal, ActiveStates =  pq};
 
         }
 
@@ -36,35 +38,35 @@ namespace AI_Project1
             while (ActiveStates.Any())
             {
                 //Change with Pirioriry queue
-                var searchedStated = ActiveStates.OrderBy(x => x.CostDistance).First();
+                var searchedStated = ActiveStates.Dequeue();
                 if (searchedStated.HasReachedGoal(Goal)) return searchedStated;
                 
 
-                VisitedStates.Add(searchedStated);
-                ActiveStates.Remove(searchedStated);
+                VisitedStates.Add(searchedStated.Key,searchedStated.Cost);
+                
                 var possibleStates = GetPossible(searchedStated);
 
                 foreach (var state in possibleStates)
                 {
-                    if (VisitedStates.Any(x => x.Key == state.Key))
+                    if (VisitedStates.ContainsKey(state.Key))
                         continue;
 
                     if (ActiveStates.Any(x => x.Key==state.Key))
                     {
                         var existingState = ActiveStates.First(x => x.Key==state.Key);
-                        if (existingState.Distance > searchedStated.Distance)
+                        if (existingState.CostDistance > searchedStated.CostDistance)
                         {
                             ActiveStates.Remove(existingState);
-                            ActiveStates.Add(state);
+                            ActiveStates.EnqueueWithoutDuplicates(state,state.CostDistance);
                         }
                     }
                     else
                     {
-                        ActiveStates.Add(state);
+                        ActiveStates.EnqueueWithoutDuplicates(state, state.CostDistance);
                     }
 
                 }
-                ActiveStates = ActiveStates.Distinct(new StateEqualityComparer()).ToList();
+                
             }
            
 
