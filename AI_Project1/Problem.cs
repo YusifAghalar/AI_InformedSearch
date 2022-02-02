@@ -37,7 +37,8 @@ namespace AI_Project1
             {
                 //Change with Pirioriry queue
                 var searchedStated = ActiveStates.OrderBy(x => x.Distance).First();
-             
+                
+              
 
                 if (searchedStated.HasReachedGoal(Goal))
                 {
@@ -59,7 +60,7 @@ namespace AI_Project1
                         if (existingState.Distance > searchedStated.Distance)
                         {
                             ActiveStates.Remove(existingState);
-                            ActiveStates.Add(searchedStated);
+                            ActiveStates.Add(state);
                         }
                     }
                     else
