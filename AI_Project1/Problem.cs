@@ -27,6 +27,7 @@ namespace AI_Project1
             var goal = int.Parse(lines[1]);
             var pq = new SimplePriorityQueue<State>();
             pq.Enqueue(new State(pithces, null, goal) { }, 0);
+            
             return new Problem() {  Goal = goal, ActiveStates =  pq};
 
         }
@@ -39,8 +40,10 @@ namespace AI_Project1
             {
                 //Change with Pirioriry queue
                 var searchedStated = ActiveStates.Dequeue();
+                Console.WriteLine($"{searchedStated.Key} -  {searchedStated.CostDistance}");
                 if (searchedStated.HasReachedGoal(Goal)) return searchedStated;
-                
+
+              
 
                 VisitedStates.Add(searchedStated.Key,searchedStated.Cost);
                 

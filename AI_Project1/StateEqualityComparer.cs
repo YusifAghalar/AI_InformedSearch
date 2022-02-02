@@ -4,8 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace AI_Project1
 {
-    public partial class Problem
-    {
+  
         public class StateEqualityComparer : IEqualityComparer<State>
         {
             public bool Equals(State x, State y)
@@ -18,5 +17,7 @@ namespace AI_Project1
                 return obj.Key.GetHashCode();
             }
         }
-    }
+   
+
+  
 }
