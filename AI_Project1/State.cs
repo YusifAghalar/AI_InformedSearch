@@ -54,7 +54,7 @@ namespace AI_Project1
 
         private void EstimateV2(float maxCap)
         {
-            Distance = (Distance / maxCap)*2;
+            Distance = (Distance / maxCap)*2  +1;
             CostDistance = Distance + Cost;
         }
 
