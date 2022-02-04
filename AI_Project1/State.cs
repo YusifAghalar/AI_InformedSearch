@@ -95,9 +95,10 @@ namespace AI_Project1
                     }
                 }
 
+             
 
 
-            
+
 
                 Distance = 2;
                 CostDistance = Distance + Cost;
