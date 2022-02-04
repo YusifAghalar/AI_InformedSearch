@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Priority_Queue;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace AI_Project1
 {
-    public class State
+    public class State:FastPriorityQueueNode
     {
 
         public State(List<WaterPitch> pitches, State parent, int goal,float maxCap)
@@ -54,7 +55,16 @@ namespace AI_Project1
 
         private void EstimateV2(float maxCap)
         {
-            Distance = (Distance / maxCap)*2  +1;
+            Distance = Distance / maxCap;
+
+            if (Distance % 1 != 0)
+            {
+                Distance = (float)Math.Ceiling(Distance) *2 + 1;
+            }
+            else
+            {
+                Distance = Distance * 2;
+            }
             CostDistance = Distance + Cost;
         }
 
@@ -66,8 +76,8 @@ namespace AI_Project1
                 {
                     if (Distance - cur == 0)
                     {
-                        Distance = 1;
-                        CostDistance = Distance + Cost;
+                        Distance = 0;
+                        CostDistance = Distance + Cost*0.999F;
                         return;
                         
                     }
@@ -78,14 +88,18 @@ namespace AI_Project1
                 {
                     if (Distance - cap == 0)
                     {
-                        Distance = 2;
-                        CostDistance = Distance + Cost;
+                        Distance = 1;
+                        CostDistance = Distance + Cost * 0.999F;
                         return;
                         
                     }
                 }
 
-                Distance = 3;
+
+
+                var remainder = Distance - Infinite.Current;
+
+                Distance = 2;
                 CostDistance = Distance + Cost;
                
             }

@@ -26,7 +26,7 @@ namespace AI_Project1
         {
             if (finalState != null)
             {
-                Console.WriteLine(finalState.Cost);
+                Console.WriteLine(finalState.Cost+ " steps");
 
                 while (finalState != null)
                 {

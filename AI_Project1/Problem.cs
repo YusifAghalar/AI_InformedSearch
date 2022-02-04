@@ -10,14 +10,14 @@ namespace AI_Project1
     {
         private Problem()
         {
-            ActiveStates = new SimplePriorityQueue<State>();
+            ActiveStates = new FastPriorityQueue<State>(15000);
             VisitedStates = new Dictionary<string, float>();
         }
         
         public int Goal { get; set; }
         public float MaxCapacity { get; set; }
         public HashSet<float> Possible { get; set; }
-        public SimplePriorityQueue<State> ActiveStates { get; set; }
+        public FastPriorityQueue<State> ActiveStates { get; set; }
         public Dictionary<string,float> VisitedStates { get; set; }
         public static Problem Init(string[] lines)
         {
@@ -31,7 +31,7 @@ namespace AI_Project1
             
             
             pithces.Add(WaterPitch.InfiniteWaterPitch());
-            var pq = new SimplePriorityQueue<State>();
+            var pq = new FastPriorityQueue<State>(15000);
             pq.Enqueue(new State(pithces, null, goal,maxCap) { }, 0);
             return new Problem() {  Goal = goal, ActiveStates =  pq,MaxCapacity = maxCap,Possible = set};
 
@@ -43,7 +43,7 @@ namespace AI_Project1
 
             while (ActiveStates.Any())
             {
-               
+              
                 var searchedStated = ActiveStates.Dequeue();
                 Console.WriteLine($"{searchedStated.Key} - {searchedStated.Distance} -  {searchedStated.Cost} -  {searchedStated.CostDistance}");
                 if (searchedStated.HasReachedGoal(Goal)) return searchedStated;
@@ -71,12 +71,12 @@ namespace AI_Project1
                         if (existingState.CostDistance > searchedStated.CostDistance)
                         {
                             ActiveStates.Remove(existingState);
-                            ActiveStates.EnqueueWithoutDuplicates(state,state.CostDistance);
+                            ActiveStates.Enqueue(state,state.CostDistance);
                         }
                     }
                     else
                     {
-                        ActiveStates.EnqueueWithoutDuplicates(state, state.CostDistance);
+                        ActiveStates.Enqueue(state, state.CostDistance);
                     }
 
                 }
