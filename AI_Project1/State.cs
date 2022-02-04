@@ -9,7 +9,7 @@ namespace AI_Project1
     public class State:FastPriorityQueueNode
     {
 
-        public State(List<WaterPitch> pitches, State parent, int goal,float maxCap)
+        public State(List<WaterPitch> pitches, State parent, int goal,float maxCap, HashSet<(float value, float cost)> easyToGetPossibleVolumes)
         {
             Pitches = pitches;
             Parent = parent;
@@ -18,7 +18,7 @@ namespace AI_Project1
             if (Parent == null) Cost = 0;
             else Cost = parent.Cost + 1;
 
-            SetDistance(goal,maxCap);
+            SetDistance(goal,maxCap,easyToGetPossibleVolumes);
 
         }
         public WaterPitch Infinite { get; set; }
@@ -33,7 +33,7 @@ namespace AI_Project1
         {
             return Infinite.Current == goal;
         }
-        public void SetDistance(float goal,float maxCap)
+        public void SetDistance(float goal,float maxCap, HashSet<(float value, float cost)> easyToGetPossibleVolumes)
         {
 
            
@@ -43,23 +43,27 @@ namespace AI_Project1
             {
                 var capacities = Pitches.Where(x=>!x.IsInfinite).Select(x => x.Capacity);
                 var currents = Pitches.Where(x=>!x.IsInfinite).Select(x => x.Current);
-                EstimateV1(maxCap,currents,capacities);
+                EstimateV1(maxCap,currents,capacities,easyToGetPossibleVolumes);
             }
             else
             {
-                EstimateV2(maxCap);
+                EstimateV2(maxCap,easyToGetPossibleVolumes);
             }
 
           
         }
 
-        private void EstimateV2(float maxCap)
+        private void EstimateV2(float maxCap, HashSet<(float value, float cost)> easyToGetPossibleVolumes)
         {
+            float remaider = Distance % maxCap;
             Distance = Distance / maxCap;
 
             if (Distance % 1 != 0)
             {
                 Distance = Distance *2 + 1;
+               
+                Distance= Distance + easyToGetPossibleVolumes.Where(x => Math.Abs(x.value - remaider) == 0).OrderBy(x => x.cost).FirstOrDefault().cost;
+
             }
             else
             {
@@ -68,7 +72,7 @@ namespace AI_Project1
             CostDistance = Distance + Cost;
         }
 
-        private void EstimateV1(float maxCap, IEnumerable<float> currents,IEnumerable<float> capacities)
+        private void EstimateV1(float maxCap, IEnumerable<float> currents,IEnumerable<float> capacities, HashSet<(float value, float cost)> easyToGetPossibleVolumes)
         {
             if (Distance <= maxCap)
             {
@@ -95,7 +99,20 @@ namespace AI_Project1
                     }
                 }
 
-             
+                foreach (var volume in easyToGetPossibleVolumes.OrderBy(x=>x.cost))
+                {
+
+                    if (Distance - volume.value == 0)
+                    {
+                        Distance = volume.cost;
+                        CostDistance = Distance + Cost;
+                        return;
+
+                    }
+                }
+
+
+
 
 
 

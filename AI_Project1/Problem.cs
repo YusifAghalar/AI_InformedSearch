@@ -16,7 +16,7 @@ namespace AI_Project1
         
         public int Goal { get; set; }
         public float MaxCapacity { get; set; }
-        public HashSet<float> Possible { get; set; }
+        public HashSet<(float value,float cost)> EasyToGetPossibleVolumes { get; set; }
         public FastPriorityQueue<State> ActiveStates { get; set; }
         public Dictionary<string,float> VisitedStates { get; set; }
 
@@ -30,17 +30,17 @@ namespace AI_Project1
             
             var maxCap = pithces.OrderByDescending(x => x.Capacity).FirstOrDefault().Capacity;
 
-            var set = new HashSet<float>();
+            var set = new HashSet<(float,float)>();
             
             
             pithces.Add(WaterPitch.InfiniteWaterPitch());
             var pq = new FastPriorityQueue<State>(15000);
-            pq.Enqueue(new State(pithces, null, goal,maxCap) { }, 0);
+            pq.Enqueue(new State(pithces, null, goal,maxCap,set) { }, 0);
             return new Problem() {  
                 Goal = goal,
                 ActiveStates =  pq,
                 MaxCapacity = maxCap,
-                Possible = set,
+                EasyToGetPossibleVolumes = set,
                 Capacities=capacities.Select(x=>int.Parse(x)).ToList()};
 
         }
@@ -63,12 +63,12 @@ namespace AI_Project1
 
                 VisitedStates.Add(searchedStated.Key,searchedStated.Cost);
                 
-                if (searchedStated.Cost < 3)
+                if (searchedStated.Cost < 6)
                 {
-                    searchedStated.Pitches.ForEach(x=>Possible.Add(x.Current));
+                    searchedStated.Pitches.ForEach(x=>EasyToGetPossibleVolumes.Add((x.Current,searchedStated.Cost)));
                 }
                 
-                var possibleStates = GetPossible(searchedStated);
+                var possibleStates = GetPossible(searchedStated,EasyToGetPossibleVolumes);
 
                 foreach (var state in possibleStates)
                 {
@@ -100,7 +100,7 @@ namespace AI_Project1
         
 
         
-        private List<State> GetPossible(State state)
+        private List<State> GetPossible(State state, HashSet<(float value, float cost)> easyToGetPossibleVolumes)
         {
 
             var possible = new List<State>();
@@ -115,7 +115,7 @@ namespace AI_Project1
                     var temp  = new List<WaterPitch>(state.Pitches.Select(x => new WaterPitch(x)));
                     temp[i].FillFrom(temp[j]);
                    
-                    var newState = new State(temp,state,Goal,MaxCapacity);
+                    var newState = new State(temp,state,Goal,MaxCapacity,easyToGetPossibleVolumes);
                     if(!possible.Any(x=>x.Key==newState.Key))
                         possible.Add(newState);
                     
@@ -132,7 +132,7 @@ namespace AI_Project1
             var emptied = new List<WaterPitch>(currentState.Pitches.Select(x => new WaterPitch(x)));
             if (emptied[i].IsInfinite) return;
             emptied[i].Empty();
-            var emptiedstate = new State(emptied,currentState,Goal,MaxCapacity);
+            var emptiedstate = new State(emptied,currentState,Goal,MaxCapacity,EasyToGetPossibleVolumes);
             
             possible.Add(emptiedstate);
             
@@ -143,7 +143,7 @@ namespace AI_Project1
             var filled = new List<WaterPitch>(currentState.Pitches.Select(x => new WaterPitch(x)));
             if (filled[i].IsInfinite) return;
             filled[i].Fill();
-            var filledState = new State(filled, currentState,Goal,MaxCapacity);
+            var filledState = new State(filled, currentState,Goal,MaxCapacity,EasyToGetPossibleVolumes);
             possible.Add(filledState);
            
         }
