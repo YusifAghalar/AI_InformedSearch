@@ -59,7 +59,7 @@ namespace AI_Project1
 
             if (Distance % 1 != 0)
             {
-                Distance = (float)Math.Ceiling(Distance) *2 + 1;
+                Distance = Distance *2 + 1;
             }
             else
             {
@@ -77,7 +77,7 @@ namespace AI_Project1
                     if (Distance - cur == 0)
                     {
                         Distance = 0;
-                        CostDistance = Distance + Cost*0.999F;
+                        CostDistance = Distance + Cost;
                         return;
                         
                     }
@@ -89,7 +89,7 @@ namespace AI_Project1
                     if (Distance - cap == 0)
                     {
                         Distance = 1;
-                        CostDistance = Distance + Cost * 0.999F;
+                        CostDistance = Distance + Cost;
                         return;
                         
                     }
@@ -97,7 +97,7 @@ namespace AI_Project1
 
 
 
-                var remainder = Distance - Infinite.Current;
+            
 
                 Distance = 2;
                 CostDistance = Distance + Cost;
@@ -115,31 +115,10 @@ namespace AI_Project1
         }
 
        
-        // private List<State> GetPossible(State state)
-        // {
-        //
-        //     var possible = new List<State>();
-        //     for (int i = 0; i < state.Pitches.Count; i++)
-        //     {
-        //         
-        //         AddEmptiedPitch(i,possible,state);
-        //         AddFilledPitch(i, possible, state);
-        //         for (int j = 0; j< state.Pitches.Count; j++)
-        //         {
-        //           
-        //             var temp  = new List<WaterPitch>(state.Pitches.Select(x => new WaterPitch(x)));
-        //             temp[i].FillFrom(temp[j]);
-        //            
-        //             var newState = new State(temp,state,Goal);
-        //             if(!possible.Any(x=>x.Key==newState.Key))
-        //                 possible.Add(newState);
-        //             
-        //         }
-        //     }
-        //     
-        //     return possible.ToList();
-
+      
     }
+
+
 
 
 }

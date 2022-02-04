@@ -19,10 +19,13 @@ namespace AI_Project1
         public HashSet<float> Possible { get; set; }
         public FastPriorityQueue<State> ActiveStates { get; set; }
         public Dictionary<string,float> VisitedStates { get; set; }
+
+        public List<int> Capacities { get; set; }
         public static Problem Init(string[] lines)
         {
 
-            var pithces = lines[0].Split(",", StringSplitOptions.RemoveEmptyEntries).Select(x => new WaterPitch(float.Parse(x))).ToList();
+            var capacities = lines[0].Split(",", StringSplitOptions.RemoveEmptyEntries);
+            var pithces = capacities.Select(x => new WaterPitch(float.Parse(x))).ToList();
             var goal = int.Parse(lines[1]);
             
             var maxCap = pithces.OrderByDescending(x => x.Capacity).FirstOrDefault().Capacity;
@@ -33,13 +36,21 @@ namespace AI_Project1
             pithces.Add(WaterPitch.InfiniteWaterPitch());
             var pq = new FastPriorityQueue<State>(15000);
             pq.Enqueue(new State(pithces, null, goal,maxCap) { }, 0);
-            return new Problem() {  Goal = goal, ActiveStates =  pq,MaxCapacity = maxCap,Possible = set};
+            return new Problem() {  
+                Goal = goal,
+                ActiveStates =  pq,
+                MaxCapacity = maxCap,
+                Possible = set,
+                Capacities=capacities.Select(x=>int.Parse(x)).ToList()};
 
         }
 
+    
+
         internal State Search()
         {
-          
+            if (!Helper.IsSolvable(Capacities.ToArray(), Goal))
+                return null;
 
             while (ActiveStates.Any())
             {
