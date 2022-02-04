@@ -34,7 +34,7 @@ namespace AI_Project1
                     finalState = finalState.Parent;
                 }
             }
-            else Console.WriteLine("Path not found");
+            else Console.WriteLine("Problem is unsolvable");
           
         }
     }

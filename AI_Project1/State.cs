@@ -31,7 +31,7 @@ namespace AI_Project1
 
         public bool HasReachedGoal(int goal)
         {
-            return Pitches.FirstOrDefault(x => x.IsInfinite).Current == goal;
+            return Infinite.Current == goal;
         }
         public void SetDistance(float goal,float maxCap)
         {
@@ -99,7 +99,7 @@ namespace AI_Project1
 
 
 
-
+                // Todo: make better estimation here. Distance is not 2.
                 Distance = 2;
                 CostDistance = Distance + Cost;
                
@@ -113,13 +113,8 @@ namespace AI_Project1
         public override int GetHashCode()
         {
             return Key.GetHashCode();
-        }
-
-       
+        } 
       
     }
-
-
-
 
 }
