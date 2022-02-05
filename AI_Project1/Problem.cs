@@ -11,14 +11,14 @@ namespace AI_Project1
         private Problem()
         {
             ActiveStates = new FastPriorityQueue<State>(15000);
-            VisitedStates = new Dictionary<string, float>();
+            VisitedStates = new Dictionary<string, bool>();
         }
         
         public int Goal { get; set; }
         public float MaxCapacity { get; set; }
-        public HashSet<float> Possible { get; set; }
+     
         public FastPriorityQueue<State> ActiveStates { get; set; }
-        public Dictionary<string,float> VisitedStates { get; set; }
+        public Dictionary<string, bool> VisitedStates { get; set; }
 
         public List<int> Capacities { get; set; }
         public static Problem Init(string[] lines)
@@ -40,14 +40,14 @@ namespace AI_Project1
                 Goal = goal,
                 ActiveStates =  pq,
                 MaxCapacity = maxCap,
-                Possible = set,
+              
                 Capacities=capacities.Select(x=>int.Parse(x)).ToList()};
 
         }
 
     
 
-        internal State Search()
+        public State Search()
         {
             if (!Helper.IsSolvable(Capacities.ToArray(), Goal))
                 return null;
@@ -59,19 +59,14 @@ namespace AI_Project1
                 Console.WriteLine($"{searchedStated.Key} - {searchedStated.Distance} -  {searchedStated.Cost} -  {searchedStated.CostDistance}");
                 if (searchedStated.HasReachedGoal(Goal)) return searchedStated;
 
+                VisitedStates.Add(searchedStated.Key,true);
+                
               
-
-                VisitedStates.Add(searchedStated.Key,searchedStated.Cost);
-                
-                if (searchedStated.Cost < 3)
-                {
-                    searchedStated.Pitches.ForEach(x=>Possible.Add(x.Current));
-                }
-                
                 var possibleStates = GetPossible(searchedStated);
 
                 foreach (var state in possibleStates)
                 {
+                
                    
                     if (VisitedStates.ContainsKey(state.Key))
                         continue;

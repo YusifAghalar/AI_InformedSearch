@@ -35,41 +35,71 @@ namespace AI_Project1
         }
         public void SetDistance(float goal,float maxCap)
         {
-
-           
             Distance = (Math.Abs(goal  - Infinite.Current));
-            
+            var capacities = Pitches.Where(x => !x.IsInfinite).Select(x => x.Capacity).ToList();
+            var currents = Pitches.Where(x => !x.IsInfinite).Select(x => x.Current).ToList();
             if (Distance < maxCap)
             {
-                var capacities = Pitches.Where(x=>!x.IsInfinite).Select(x => x.Capacity);
-                var currents = Pitches.Where(x=>!x.IsInfinite).Select(x => x.Current);
                 EstimateV1(maxCap,currents,capacities);
             }
             else
             {
-                EstimateV2(maxCap);
+                EstimateV2(maxCap, capacities);
             }
 
           
         }
 
-        private void EstimateV2(float maxCap)
+        private float EstimateRemainder(float remainder, List<float> pithces)
         {
-            Distance = Distance / maxCap;
-
-            if (Distance % 1 != 0)
+            float remainderEstimate = 0;
+            var candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
+            while (candidate != 0)
             {
-                Distance = Distance *2 + 1;
+                remainderEstimate += (float)(Math.Ceiling(remainder / candidate) * 2);
+                candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
+                remainder = remainder % candidate;
+            }
+          
+
+            return remainderEstimate==0?1: remainderEstimate;
+
+        }
+
+        private void EstimateV2(float maxCap, IEnumerable<float> capacities)
+        {
+            var dist1 = Math.Floor(Distance / maxCap);
+
+            
+            if (Distance % maxCap != 0)
+            {
+                dist1 = dist1 * 2 ;
+
+                var upperRemainder = Distance % maxCap;
+                var lowerRemainder = maxCap - Distance % maxCap;
+
+                var a = EstimateRemainder(upperRemainder, capacities.ToList());
+                var b = EstimateRemainder(lowerRemainder, capacities.ToList())+2;
+
+                var dist2 = Math.Min(a, b);
+
+                Distance =(float) (dist1+dist2);
+                CostDistance = Distance + Cost;
+
             }
             else
             {
-                Distance = Distance * 2;
+                Distance = (float)dist1 * 2;
             }
             CostDistance = Distance + Cost;
+
+
         }
 
-        private void EstimateV1(float maxCap, IEnumerable<float> currents,IEnumerable<float> capacities)
+        private void EstimateV1(float maxCap, IEnumerable<float> currents, IEnumerable<float> capacities)
         {
+
+       
             if (Distance <= maxCap)
             {
                 foreach (var cur in currents)
@@ -95,12 +125,16 @@ namespace AI_Project1
                     }
                 }
 
-             
 
+                var upperRemainder = Distance % maxCap;
+                var lowerRemainder = maxCap - Distance % maxCap;
 
+                var a = EstimateRemainder(upperRemainder, capacities.ToList());
+                var b = EstimateRemainder(lowerRemainder, capacities.ToList());
 
-                // Todo: make better estimation here. Distance is not 2.
-                Distance = 2;
+                var minRemainderDistance = Math.Min(a, b);
+
+                Distance = minRemainderDistance;
                 CostDistance = Distance + Cost;
                
             }
