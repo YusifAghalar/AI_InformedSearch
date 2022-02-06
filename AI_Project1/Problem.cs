@@ -61,7 +61,8 @@ namespace AI_Project1
                 Console.WriteLine($"{searchedStated.Key} - {searchedStated.Distance} -  {searchedStated.Cost} -  {searchedStated.CostDistance}");
                 if (searchedStated.HasReachedGoal(Goal)) return searchedStated;
 
-                VisitedStates.Add(searchedStated.Key,true);
+                if(!VisitedStates.ContainsKey(searchedStated.Key))
+                    VisitedStates.Add(searchedStated.Key,true);
                 
               
                 var possibleStates = GetPossible(searchedStated);
@@ -79,12 +80,12 @@ namespace AI_Project1
                         if (existingState.Element.Cost > searchedStated.CostDistance)
                         {
                             
-                            ActiveStates.Enqueue(state,new PQueueIndex { Distance=state.Distance,CostDistance=state.CostDistance});
+                            ActiveStates.Enqueue(state,new PQueueIndex { Distance=state.Distance,CostDistance=state.CostDistance, RawDistance=Math.Abs(state.Infinite.Current-Goal)});
                         }
                     }
                     else
                     {
-                        ActiveStates.Enqueue(state, new PQueueIndex { Distance = state.Distance, CostDistance = state.CostDistance });
+                        ActiveStates.Enqueue(state, new PQueueIndex { Distance = state.Distance, CostDistance = state.CostDistance, RawDistance = Math.Abs(state.Infinite.Current - Goal) });
                     }
 
                 }

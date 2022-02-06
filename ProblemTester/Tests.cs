@@ -49,9 +49,10 @@ namespace ProblemTester
         }
 
         [Theory]
-        [InlineData("3, 5, 10", "18", 15000)]
-        [InlineData("2,3,5,19,121,852", "11443", 15000)]
-        [InlineData("3,5,8,10", "207", 15000)]
+        [InlineData("3, 5, 10", "18", 10000)]
+        [InlineData("2,3,5,19,121,852", "11443", 10000)]
+        [InlineData("2,3,5,19,121,852", "21443", 15000)]
+        [InlineData("3,5,8,10", "207", 10000)]
         public void ShouldNotTakeLongerThan(string a, string b, long milliseconds)
         {
             var sw = Stopwatch.StartNew();
@@ -79,9 +80,9 @@ namespace ProblemTester
             float maxEstiomation=0;
             while (solution.Parent!=null)
             {
-                if (solution.Parent.Cost> maxEstiomation)
+                if (solution.Parent.Distance > maxEstiomation)
                 {
-                    maxEstiomation = solution.Parent.Cost;
+                    maxEstiomation = solution.Parent.Distance;
                 };
                 solution = solution.Parent;
             }
