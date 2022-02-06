@@ -53,43 +53,35 @@ namespace AI_Project1
         private float EstimateRemainder(float remainder, List<float> pithces)
         {
             float remainderEstimate = 0;
-            var candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
+            var candidate = pithces.Where(x => remainder >= x).OrderByDescending(x => x).FirstOrDefault();
             while (candidate != 0)
             {
-                remainderEstimate += (float)(Math.Ceiling(remainder / candidate) * 2);
-                candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
-                remainder = remainder % candidate;
-            }
-          
+                remainderEstimate += (float)(Math.Floor(remainder / candidate) * 2);
 
-            return remainderEstimate==0?1: remainderEstimate;
+                var nextRemainder =  Math.Min(candidate- remainder%candidate, remainder % candidate);
+                if (nextRemainder == candidate - remainder % candidate) remainderEstimate = remainderEstimate + 2;
+                remainder = nextRemainder;
+
+                candidate = pithces.Where(x => remainder >= x).OrderByDescending(x => x).FirstOrDefault();
+            }
+
+            if (remainder != 0) remainderEstimate += 2;
+            return remainderEstimate;
 
         }
 
         private void EstimateV2(float maxCap, IEnumerable<float> capacities)
         {
-            var dist1 = Math.Floor(Distance / maxCap);
-
-            
+        
             if (Distance % maxCap != 0)
             {
-                dist1 = dist1 * 2 ;
 
-                var upperRemainder = Distance % maxCap;
-                var lowerRemainder = maxCap - Distance % maxCap;
-
-                var a = EstimateRemainder(upperRemainder, capacities.ToList());
-                var b = EstimateRemainder(lowerRemainder, capacities.ToList())+2;
-
-                var dist2 = Math.Min(a, b);
-
-                Distance =(float) (dist1+dist2);
+                Distance = EstimateRemainder(Distance, capacities.ToList());
                 CostDistance = Distance + Cost;
-
             }
             else
             {
-                Distance = (float)dist1 * 2;
+                Distance = (float)(Distance / maxCap) * 2;
             }
             CostDistance = Distance + Cost;
 
@@ -112,6 +104,18 @@ namespace AI_Project1
                         
                     }
                     
+                }
+
+
+                foreach (var cap in capacities)
+                {
+                    if (cap - Distance == 0)
+                    {
+                        Distance = 1;
+                        CostDistance = Distance + Cost;
+                        return;
+
+                    }
                 }
 
                 foreach (var cap in capacities)
