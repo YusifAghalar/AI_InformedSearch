@@ -63,10 +63,14 @@ namespace ProblemTester
             Assert.True(sw.ElapsedMilliseconds < milliseconds);
         }
         [Theory]
-        [InlineData("3, 5, 10", "18",18)]
-        [InlineData("2,5,6,72", "143", 7)]
+        [InlineData("3, 5, 10", "18", 6)]
+        [InlineData("2,3,5,19,121,852", "11443", 36)]
         [InlineData("3,5,8,10", "207", 43)]
         [InlineData("3,5,9", "34", 11)]
+        [InlineData("2,5,6,72", "143", 7)]
+        [InlineData("3,5", "4", 7)]
+        [InlineData("3,5", "17", 9)]
+        [InlineData("3,5", "14", 8)]
         public void Is_Admissable(string a, string b, float max  )
         {
             var problem = Problem.Init(new string[] { a, b.ToString() });
