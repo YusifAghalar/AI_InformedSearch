@@ -40,6 +40,7 @@ namespace ProblemTester
         [InlineData("2,5,6,72", "143", 7)]
         [InlineData("3,5", "4",7)]
         [InlineData("3,5", "17",9)]
+        [InlineData("3,5", "14",8)]
         public void HasFoundCorrentSteps(string a, string b,float cost)
         {
             var problem = Problem.Init(new string[] { a, b });
@@ -61,7 +62,28 @@ namespace ProblemTester
 
             Assert.True(sw.ElapsedMilliseconds < milliseconds);
         }
+        [Theory]
+        [InlineData("3, 5, 10", "18",18)]
+        [InlineData("2,5,6,72", "143", 7)]
+        [InlineData("3,5,8,10", "207", 43)]
+        [InlineData("3,5,9", "34", 11)]
+        public void Is_Admissable(string a, string b, float max  )
+        {
+            var problem = Problem.Init(new string[] { a, b.ToString() });
+            var solution = problem.Search();
 
+            float maxEstiomation=0;
+            while (solution.Parent!=null)
+            {
+                if (solution.Parent.Cost> maxEstiomation)
+                {
+                    maxEstiomation = solution.Parent.Cost;
+                };
+                solution = solution.Parent;
+            }
+
+            Assert.True(maxEstiomation <= max);
+        }
 
 
     }
