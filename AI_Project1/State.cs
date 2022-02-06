@@ -56,13 +56,14 @@ namespace AI_Project1
             var candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
             while (candidate != 0)
             {
-                remainderEstimate += (float)(Math.Ceiling(remainder / candidate) * 2);
-                candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
+                remainderEstimate += (float)(Math.Floor(remainder / candidate) * 2);
                 remainder = remainder % candidate;
+                candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
             }
-          
+            if (remainder != 0) remainderEstimate += 2;
+            
 
-            return remainderEstimate==0?1: remainderEstimate;
+            return remainderEstimate;
 
         }
 
