@@ -57,10 +57,10 @@ namespace AI_Project1
             while (candidate != 0)
             {
                 remainderEstimate += (float)(Math.Floor(remainder / candidate) * 2);
-                remainder = remainder % candidate;
+                remainder =  remainder % candidate;
                 candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
             }
-            if (remainder != 0) remainderEstimate += 2;
+            if (remainder != 0) remainderEstimate +=1 ;
             
 
             return remainderEstimate;
@@ -79,10 +79,10 @@ namespace AI_Project1
                 var upperRemainder = Distance % maxCap;
                 var lowerRemainder = maxCap - Distance % maxCap;
 
-                var a = EstimateRemainder(upperRemainder, capacities.ToList());
-                var b = EstimateRemainder(lowerRemainder, capacities.ToList())+2;
+                var upperRemainderDistance = EstimateRemainder(upperRemainder, capacities.ToList());
+                var lowerRemainderDistance = EstimateRemainder(lowerRemainder, capacities.ToList())+2;
 
-                var dist2 = Math.Min(a, b);
+                var dist2 = Math.Min(upperRemainderDistance, lowerRemainderDistance);
 
                 Distance =(float) (dist1+dist2);
                 CostDistance = Distance + Cost;
