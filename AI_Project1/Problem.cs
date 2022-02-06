@@ -10,14 +10,16 @@ namespace AI_Project1
     {
         private Problem()
         {
-            ActiveStates = new FastPriorityQueue<State>(15000);
+            ActiveStates =  new PriorityQueue<State, PQueueIndex>(15000);
             VisitedStates = new Dictionary<string, bool>();
         }
         
         public int Goal { get; set; }
         public float MaxCapacity { get; set; }
      
-        public FastPriorityQueue<State> ActiveStates { get; set; }
+        public PriorityQueue<State, PQueueIndex> ActiveStates { get; set; }
+        public Dictionary<string,bool> ActiveDict { get; set; }
+
         public Dictionary<string, bool> VisitedStates { get; set; }
 
         public List<int> Capacities { get; set; }
@@ -34,8 +36,8 @@ namespace AI_Project1
             
             
             pithces.Add(WaterPitch.InfiniteWaterPitch());
-            var pq = new FastPriorityQueue<State>(15000);
-            pq.Enqueue(new State(pithces, null, goal,maxCap) { }, 0);
+            var pq = new PriorityQueue<State, PQueueIndex>(15000);
+            pq.Enqueue(new State(pithces, null, goal,maxCap) { }, new PQueueIndex());
             return new Problem() {  
                 Goal = goal,
                 ActiveStates =  pq,
@@ -52,7 +54,7 @@ namespace AI_Project1
             if (!Helper.IsSolvable(Capacities.ToArray(), Goal))
                 return null;
 
-            while (ActiveStates.Any())
+            while (ActiveStates.Count>0)
             {
               
                 var searchedStated = ActiveStates.Dequeue();
@@ -71,18 +73,18 @@ namespace AI_Project1
                     if (VisitedStates.ContainsKey(state.Key))
                         continue;
 
-                    if (ActiveStates.Any(x => x.Key==state.Key))
+                    if (ActiveStates.UnorderedItems.Any(x => x.Element.Key==state.Key))
                     {
-                        var existingState = ActiveStates.First(x => x.Key==state.Key);
-                        if (existingState.CostDistance > searchedStated.CostDistance)
+                        var existingState = ActiveStates.UnorderedItems.First(x => x.Element.Key==state.Key);
+                        if (existingState.Element.Cost > searchedStated.CostDistance)
                         {
-                            ActiveStates.Remove(existingState);
-                            ActiveStates.Enqueue(state,state.CostDistance);
+                            
+                            ActiveStates.Enqueue(state,new PQueueIndex { Distance=state.Distance,CostDistance=state.CostDistance});
                         }
                     }
                     else
                     {
-                        ActiveStates.Enqueue(state, state.CostDistance);
+                        ActiveStates.Enqueue(state, new PQueueIndex { Distance = state.Distance, CostDistance = state.CostDistance });
                     }
 
                 }

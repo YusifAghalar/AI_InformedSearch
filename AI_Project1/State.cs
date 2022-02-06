@@ -8,7 +8,7 @@ namespace AI_Project1
 {
     public class State:FastPriorityQueueNode
     {
-
+        
         public State(List<WaterPitch> pitches, State parent, int goal,float maxCap)
         {
             Pitches = pitches;
@@ -28,6 +28,7 @@ namespace AI_Project1
         public float Cost { get; set; }
         public float Distance { get; set; }
         public float CostDistance { get; set; }
+
 
         public bool HasReachedGoal(int goal)
         {
@@ -136,7 +137,7 @@ namespace AI_Project1
                 var minRemainderDistance = Math.Min(a, b);
 
                 Distance = minRemainderDistance;
-                CostDistance = Distance + Cost;
+                CostDistance = Distance+ Cost;
                
             }
 
@@ -151,5 +152,4 @@ namespace AI_Project1
         } 
       
     }
-
 }

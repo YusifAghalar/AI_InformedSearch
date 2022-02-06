@@ -39,6 +39,7 @@ namespace ProblemTester
         [InlineData("3,5,9", "34", 11)]
         [InlineData("2,5,6,72", "143", 7)]
         [InlineData("3,5", "4",7)]
+        [InlineData("3,5", "17",9)]
         public void HasFoundCorrentSteps(string a, string b,float cost)
         {
             var problem = Problem.Init(new string[] { a, b });
