@@ -6,10 +6,9 @@ using System.Linq;
 
 namespace AI_Project1
 {
-    public class State:FastPriorityQueueNode
+    public class State : FastPriorityQueueNode
     {
-        
-        public State(List<WaterPitch> pitches, State parent, int goal,float maxCap)
+        public State(List<WaterPitch> pitches, State parent, int goal, float maxCap)
         {
             Pitches = pitches;
             Parent = parent;
@@ -18,9 +17,9 @@ namespace AI_Project1
             if (Parent == null) Cost = 0;
             else Cost = parent.Cost + 1;
 
-            SetDistance(goal,maxCap);
-
+            SetDistance(goal, maxCap);
         }
+
         public WaterPitch Infinite { get; set; }
         public List<WaterPitch> Pitches { get; set; }
         public State Parent { get; set; }
@@ -34,21 +33,27 @@ namespace AI_Project1
         {
             return Infinite.Current == goal;
         }
-        public void SetDistance(float goal,float maxCap)
+
+        public void SetDistance(float goal, float maxCap)
         {
-            Distance = (Math.Abs(goal  - Infinite.Current));
+            Distance = (Math.Abs(goal - Infinite.Current));
             var capacities = Pitches.Where(x => !x.IsInfinite).Select(x => x.Capacity).ToList();
             var currents = Pitches.Where(x => !x.IsInfinite).Select(x => x.Current).ToList();
-            if (Distance < maxCap)
+            if (!Helper.GoalIsLesserThanMinimal(capacities.ToArray(), goal))
             {
-                EstimateV1(maxCap,currents,capacities);
+                Distance = Math.Abs(Infinite.Current / goal - 1) * 2;
+                CostDistance = Cost + Distance;
+                return;
+            }
+
+            if (Distance <= maxCap)
+            {
+                EstimateV1(maxCap, currents, capacities);
             }
             else
             {
                 EstimateV2(maxCap, capacities);
             }
-
-          
         }
 
         private float EstimateRemainder(float remainder, List<float> pithces)
@@ -57,25 +62,25 @@ namespace AI_Project1
             var candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
             while (candidate != 0)
             {
-                remainderEstimate += (float)(Math.Floor(remainder / candidate) * 2);
-                remainder =  remainder % candidate;
+                remainderEstimate += (float) (Math.Floor(remainder / candidate) * 2);
+                remainder = remainder % candidate;
                 candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
             }
-            if (remainder != 0) remainderEstimate +=2 ;
-            
+
+            if (remainder != 0) remainderEstimate += 2;
+
 
             return remainderEstimate;
-
         }
 
         private void EstimateV2(float maxCap, IEnumerable<float> capacities)
         {
             var dist1 = Math.Floor(Distance / maxCap);
 
-            
+
             if (Distance % maxCap != 0)
             {
-                dist1 = dist1 * 2 ;
+                dist1 = dist1 * 2;
 
                 var upperRemainder = Distance % maxCap;
                 var lowerRemainder = maxCap - Distance % maxCap;
@@ -85,23 +90,19 @@ namespace AI_Project1
 
                 var dist2 = Math.Min(upperRemainderDistance, lowerRemainderDistance);
 
-                Distance =(float) (dist1+dist2);
+                Distance = (float) (dist1 + dist2);
                 CostDistance = Distance + Cost;
-
             }
             else
             {
-                Distance = (float)dist1 * 2;
+                Distance = (float) dist1 * 2;
             }
+
             CostDistance = Distance + Cost;
-
-
         }
 
         private void EstimateV1(float maxCap, IEnumerable<float> currents, IEnumerable<float> capacities)
         {
-
-       
             if (Distance <= maxCap)
             {
                 foreach (var cur in currents)
@@ -111,9 +112,7 @@ namespace AI_Project1
                         Distance = 0;
                         CostDistance = Distance + Cost;
                         return;
-                        
                     }
-                    
                 }
 
                 foreach (var cap in capacities)
@@ -123,7 +122,6 @@ namespace AI_Project1
                         Distance = 1;
                         CostDistance = Distance + Cost;
                         return;
-                        
                     }
                 }
 
@@ -137,11 +135,8 @@ namespace AI_Project1
                 var minRemainderDistance = Math.Min(a, b);
 
                 Distance = minRemainderDistance;
-                CostDistance = Distance+ Cost;
-               
+                CostDistance = Distance + Cost;
             }
-
-        
         }
 
         public string Key => string.Join(" ", Pitches.Select(x => x.Current.ToString()));
@@ -149,7 +144,6 @@ namespace AI_Project1
         public override int GetHashCode()
         {
             return Key.GetHashCode();
-        } 
-      
+        }
     }
 }

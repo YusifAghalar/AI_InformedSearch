@@ -78,11 +78,11 @@ namespace ProblemTester
             var solution = problem.Search();
 
             float maxEstiomation=0;
-            while (solution.Parent!=null)
+            while (solution!=null)
             {
-                if (solution.Parent.Distance > maxEstiomation)
+                if (solution.Distance > maxEstiomation)
                 {
-                    maxEstiomation = solution.Parent.Distance;
+                    maxEstiomation = solution.Distance;
                 };
                 solution = solution.Parent;
             }

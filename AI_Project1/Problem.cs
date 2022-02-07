@@ -53,6 +53,7 @@ namespace AI_Project1
         {
             if (!Helper.IsSolvable(Capacities.ToArray(), Goal))
                 return null;
+           
 
             while (ActiveStates.Count>0)
             {
