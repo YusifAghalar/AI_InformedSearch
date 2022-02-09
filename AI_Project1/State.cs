@@ -63,7 +63,7 @@ namespace AI_Project1
             while (candidate != 0)
             {
                 remainderEstimate += (float) (Math.Floor(remainder / candidate) * 2);
-                remainder = remainder % candidate;
+                remainder = Math.Min(candidate-remainder%candidate,remainder % candidate);
                 candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
             }
 

@@ -41,6 +41,8 @@ namespace ProblemTester
         [InlineData("3,5", "4",7)]
         [InlineData("3,5", "17",9)]
         [InlineData("3,5", "14",8)]
+        [InlineData("1,94,100", "12",7)]
+        [InlineData("1,97,100", "3",3)]
         public void HasFoundCorrentSteps(string a, string b,float cost)
         {
             var problem = Problem.Init(new string[] { a, b });
@@ -72,6 +74,8 @@ namespace ProblemTester
         [InlineData("3,5", "4", 7)]
         [InlineData("3,5", "17", 9)]
         [InlineData("3,5", "14", 8)]
+        [InlineData("1,94,100", "12", 7)]
+        [InlineData("1,97,100", "3", 3)]
         public void Is_Admissable(string a, string b, float max  )
         {
             var problem = Problem.Init(new string[] { a, b.ToString() });
