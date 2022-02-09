@@ -36,7 +36,7 @@ namespace AI_Project1
             
             
             pithces.Add(WaterPitch.InfiniteWaterPitch());
-            var pq = new PriorityQueue<State, PQueueIndex>(15000);
+            var pq = new PriorityQueue<State, PQueueIndex>(10000);
             pq.Enqueue(new State(pithces, null, goal,maxCap) { }, new PQueueIndex());
             return new Problem() {  
                 Goal = goal,
@@ -64,11 +64,9 @@ namespace AI_Project1
 
                 if(!VisitedStates.ContainsKey(searchedStated.Key))
                     VisitedStates.Add(searchedStated.Key,true);
-                
-              
-                var possibleStates = GetPossible(searchedStated);
+                var possibleNextsteps = GetPossible(searchedStated);
 
-                foreach (var state in possibleStates)
+                foreach (var state in possibleNextsteps)
                 {
                 
                    
@@ -79,10 +77,8 @@ namespace AI_Project1
                     {
                         var existingState = ActiveStates.UnorderedItems.First(x => x.Element.Key==state.Key);
                         if (existingState.Element.Cost > searchedStated.CostDistance)
-                        {
-                            
                             ActiveStates.Enqueue(state,new PQueueIndex { Distance=state.Distance,CostDistance=state.CostDistance, RawDistance=Math.Abs(state.Infinite.Current-Goal)});
-                        }
+                        
                     }
                     else
                     {
@@ -115,8 +111,12 @@ namespace AI_Project1
                     temp[i].FillFrom(temp[j]);
                    
                     var newState = new State(temp,state,Goal,MaxCapacity);
-                    if(!possible.Any(x=>x.Key==newState.Key))
+                    if(!VisitedStates.ContainsKey(newState.Key))
+                    {
                         possible.Add(newState);
+                        newState.SetDistance(Goal,MaxCapacity);
+                    }
+                       
                     
                 }
             }
@@ -132,9 +132,13 @@ namespace AI_Project1
             if (emptied[i].IsInfinite) return;
             emptied[i].Empty();
             var emptiedstate = new State(emptied,currentState,Goal,MaxCapacity);
-            
-            possible.Add(emptiedstate);
-            
+            if (!possible.Any(x => x.Key == emptiedstate.Key))
+            {
+                emptiedstate.SetDistance(Goal, MaxCapacity);
+                possible.Add(emptiedstate);
+            }
+
+          
         }
         private void AddFilledPitch(int i, List<State> possible, State currentState)
         {
@@ -143,7 +147,13 @@ namespace AI_Project1
             if (filled[i].IsInfinite) return;
             filled[i].Fill();
             var filledState = new State(filled, currentState,Goal,MaxCapacity);
-            possible.Add(filledState);
+
+            if (!possible.Any(x => x.Key == filledState.Key))
+            {
+                filledState.SetDistance(Goal, MaxCapacity);
+                possible.Add(filledState);
+            }
+          
            
         }
     }

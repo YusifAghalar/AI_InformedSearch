@@ -76,6 +76,9 @@ namespace ProblemTester
         [InlineData("3,5", "14", 8)]
         [InlineData("1,94,100", "12", 7)]
         [InlineData("1,97,100", "3", 3)]
+        [InlineData("3,70,110,4000", "4064", 44)]
+      
+
         public void Is_Admissable(string a, string b, float max  )
         {
             var problem = Problem.Init(new string[] { a, b.ToString() });

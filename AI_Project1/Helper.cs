@@ -16,7 +16,7 @@ namespace AI_Project1
 
         public static bool IsSolvable(int [] capacities,int goal) =>  goal % GCD(capacities) == 0;
 
-        public static bool GoalIsLesserThanMinimal(float[] capacities, float goal) => !capacities.Any(x => x > goal);
+        public static bool GoalIsLesserThanMinimal(float[] capacities, float goal) => capacities.OrderBy(x=>x).FirstOrDefault()>goal;
 
     }
 }

@@ -17,7 +17,7 @@ namespace AI_Project1
             if (Parent == null) Cost = 0;
             else Cost = parent.Cost + 1;
 
-            SetDistance(goal, maxCap);
+          
         }
 
         public WaterPitch Infinite { get; set; }
@@ -39,105 +39,52 @@ namespace AI_Project1
             Distance = (Math.Abs(goal - Infinite.Current));
             var capacities = Pitches.Where(x => !x.IsInfinite).Select(x => x.Capacity).ToList();
             var currents = Pitches.Where(x => !x.IsInfinite).Select(x => x.Current).ToList();
-            if (!Helper.GoalIsLesserThanMinimal(capacities.ToArray(), goal))
+            if (Helper.GoalIsLesserThanMinimal(capacities.ToArray(), goal))
             {
                 Distance = Math.Abs(Infinite.Current / goal - 1) * 2;
                 CostDistance = Cost + Distance;
                 return;
             }
 
-            if (Distance <= maxCap)
-            {
-                EstimateV1(maxCap, currents, capacities);
-            }
-            else
-            {
-                EstimateV2(maxCap, capacities);
-            }
+            Estimate(maxCap, capacities, currents);
+            
         }
 
-        private float EstimateRemainder(float remainder, List<float> pithces)
+        private float EstimateRemainder(float remainder, List<float> pithces,List<float> currentValues)
         {
-            float remainderEstimate = 0;
-            var candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
-            while (candidate != 0)
-            {
-                remainderEstimate += (float) (Math.Floor(remainder / candidate) * 2);
-                remainder = Math.Min(candidate-remainder%candidate,remainder % candidate);
-                candidate = pithces.Where(x => remainder > x).OrderByDescending(x => x).FirstOrDefault();
-            }
+           
 
-            if (remainder != 0) remainderEstimate += 2;
+            if (remainder == 0) return 0; 
+            var candidate = pithces.OrderByDescending(x => x).FirstOrDefault();
 
+            if (pithces.Any(x => x == remainder)||currentValues.Any(x=>x==remainder))
+                return 1;
+            float remainderEstimate = (float) (Math.Floor(remainder / candidate) * 2);
 
-            return remainderEstimate;
+            if (pithces.Count == 1 && remainder != 0) return 2;
+
+            pithces.Remove(candidate);
+
+            return remainderEstimate+Math.Min(EstimateRemainder(remainder % candidate, new List<float>(pithces),currentValues ), EstimateRemainder(candidate - remainder % candidate, new List<float>(pithces),currentValues)+2);
         }
 
-        private void EstimateV2(float maxCap, IEnumerable<float> capacities)
+        private void Estimate(float maxCap, IEnumerable<float> capacities, IEnumerable<float> current)
         {
-            var dist1 = Math.Floor(Distance / maxCap);
-
-
+           
             if (Distance % maxCap != 0)
             {
-                dist1 = dist1 * 2;
-
-                var upperRemainder = Distance % maxCap;
-                var lowerRemainder = maxCap - Distance % maxCap;
-
-                var upperRemainderDistance = EstimateRemainder(upperRemainder, capacities.ToList());
-                var lowerRemainderDistance = EstimateRemainder(lowerRemainder, capacities.ToList());
-
-                var dist2 = Math.Min(upperRemainderDistance, lowerRemainderDistance);
-
-                Distance = (float) (dist1 + dist2);
+              
+                Distance = EstimateRemainder(Distance, capacities.ToList(),current.ToList());
                 CostDistance = Distance + Cost;
             }
             else
             {
-                Distance = (float) dist1 * 2;
+                Distance = (float)(Distance/maxCap) * 2;
             }
 
             CostDistance = Distance + Cost;
         }
 
-        private void EstimateV1(float maxCap, IEnumerable<float> currents, IEnumerable<float> capacities)
-        {
-            if (Distance <= maxCap)
-            {
-                foreach (var cur in currents)
-                {
-                    if (Distance - cur == 0)
-                    {
-                        Distance = 0;
-                        CostDistance = Distance + Cost;
-                        return;
-                    }
-                }
-
-                foreach (var cap in capacities)
-                {
-                    if (Distance - cap == 0)
-                    {
-                        Distance = 1;
-                        CostDistance = Distance + Cost;
-                        return;
-                    }
-                }
-
-
-                var upperRemainder = Distance % maxCap;
-                var lowerRemainder = maxCap - Distance % maxCap;
-
-                var a = EstimateRemainder(upperRemainder, capacities.ToList());
-                var b = EstimateRemainder(lowerRemainder, capacities.ToList());
-
-                var minRemainderDistance = Math.Min(a, b);
-
-                Distance = minRemainderDistance;
-                CostDistance = Distance + Cost;
-            }
-        }
 
         public string Key => string.Join(" ", Pitches.Select(x => x.Current.ToString()));
 
