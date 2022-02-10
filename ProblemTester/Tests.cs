@@ -53,7 +53,7 @@ namespace ProblemTester
         [Theory]
         [InlineData("3, 5, 10", "18", 10000)]
         [InlineData("2,3,5,19,121,852", "11443", 10000)]
-        [InlineData("2,3,5,19,121,852", "21443", 15000)]
+        [InlineData("2,3,5,19,121,852", "21443", 10000)]
         [InlineData("3,5,8,10", "207", 10000)]
         public void ShouldNotTakeLongerThan(string a, string b, long milliseconds)
         {
@@ -77,8 +77,7 @@ namespace ProblemTester
         [InlineData("1,94,100", "12", 7)]
         [InlineData("1,97,100", "3", 3)]
         [InlineData("3,70,110,4000", "4064", 44)]
-      
-
+     
         public void Is_Admissable(string a, string b, float max  )
         {
             var problem = Problem.Init(new string[] { a, b.ToString() });
